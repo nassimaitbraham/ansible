@@ -1,0 +1,8 @@
+---
+- name: Fichiers necissaire pour la conf SSL du serveur
+  hosts: bdd1
+  remote_user: "{{ user }}"
+  roles:
+    - ssl_server_config
+    - ssl_client_config
+...

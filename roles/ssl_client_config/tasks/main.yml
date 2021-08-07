@@ -1,0 +1,18 @@
+---
+- name: "Creation du repertoire de generation des fichiers"
+  file:
+    path: "/home/{{ user }}/{{ client_word_dir }}"
+    state: directory
+    mode: "u=rwx,g=r,o=r"
+
+- name: "Creation de la clee privee du client"
+  command: openssl genrsa -out /home/{{ user }}/{{ client_word_dir }}/myPrivateKey.key 4096
+
+- name : "Creation de la demande de signature de certificat (CSR)"
+  command: openssl req -new -key /home/{{ user }}/{{ client_word_dir }}/myPrivateKey.key -out /home/{{ user }}/{{ client_word_dir }}/marone_request.csr -nodes -subj "/C=US/ST=Ohio/L=Ohio/O=lbs/OU=IT/CN=marone"
+
+- name: "creation d'un certificat signe par le serveur"
+  command: openssl x509 -req -days 360 -in /home/{{ user }}/{{ client_word_dir }}/marone_request.csr -CA /home/{{ user }}/{{ server_word_dir }}/wstutorial.crt -CAkey /home/{{ user }}/{{ server_word_dir }}/wstutorialPrivate.key -CAcreateserial -out /home/{{ user }}/{{ client_word_dir }}/marone.crt -sha256
+
+- name: "Stockage de la cle privee et du certificat signe par le serveur dans un keystore PKCS12"
+  command: openssl pkcs12 -export -out /home/{{ user }}/{{ client_word_dir }}/client_marone.p12 -inkey /home/{{ user }}/{{ client_word_dir }}/myPrivateKey.key -in /home/{{ user }}/{{ client_word_dir }}/marone.crt -certfile server-side/wstutorial.crt -password pass:client1

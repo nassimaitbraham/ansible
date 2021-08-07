@@ -1,0 +1,8 @@
+all:
+  hosts:
+    bdd1:
+      user: aitech
+      server_word_dir: server-side
+      client_word_dir: client-side
+    http1:
+    
